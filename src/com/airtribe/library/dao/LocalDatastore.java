@@ -8,7 +8,7 @@ public class LocalDatastore<T> implements Datastore<T>{
     @Override
     public void add(String id, T item){
         if(db.containsKey(id))
-            throw new RuntimeException("Data Already present!!");
+            throw new IllegalArgumentException("Data already present for id: " + id);
         db.put(id, item);
     }
 
@@ -18,5 +18,10 @@ public class LocalDatastore<T> implements Datastore<T>{
 
     public List<T> getAllItems(){
         return List.copyOf(db.values());
+    }
+
+    @Override
+    public void remove(String id) {
+        db.remove(id);
     }
 }

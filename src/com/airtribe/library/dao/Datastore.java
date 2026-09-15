@@ -7,4 +7,5 @@ public interface Datastore<T> {
     void add(String id,T item);
     Optional<T> getItemById(String id);
     List<T> getAllItems();
+    void remove(String id);
 }

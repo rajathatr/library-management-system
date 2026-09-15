@@ -15,6 +15,10 @@ public class IDGenerator {
         return "User-" + userID.addAndGet(1);
     }
 
+    public static String getNextPatronID(){
+        return "Patron-" + userID.addAndGet(1);
+    }
+
     public static String getNextRentID(){
         return "Rent-" + rentID.addAndGet(1);
     }
