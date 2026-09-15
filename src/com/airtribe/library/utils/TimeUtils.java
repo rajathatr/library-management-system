@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import com.airtribe.library.exception.InvalidDataException;
 
 public class TimeUtils {
     public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm";
@@ -13,8 +14,7 @@ public class TimeUtils {
         try{
             return LocalDateTime.parse(time, formatter);
         }catch (DateTimeParseException e){
-            System.out.println(e.getMessage());
-            throw new RuntimeException("Invalid Date time format!!");
+            throw new InvalidDataException("Invalid date-time. Expected format: " + TIME_FORMAT);
         }
     }
 

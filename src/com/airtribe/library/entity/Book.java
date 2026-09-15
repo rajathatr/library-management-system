@@ -5,25 +5,29 @@ import com.airtribe.library.utils.Validator;
 
 public class Book {
     private final String id;
-    private String name;
+    private String title;
     private String author;
     private int price;
+    private final String isbn;
+    private int publicationYear;
     private boolean isRented;
 
-    public Book(String name, String author, int price){
-        this.name = Validator.nonBlank(name);
+    public Book(String title, String author, String isbn, int publicationYear, int price){
+        this.title = Validator.nonBlank(title);
         this.author = Validator.nonBlank(author);
-        this.price = price;
+        this.isbn = Validator.nonBlank(isbn);
+        this.publicationYear = Validator.positive(publicationYear, "Publication year");
+        this.price = Validator.positive(price, "Price");
         this.isRented = false;
         this.id = IDGenerator.getNextBookID();
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = Validator.nonBlank(title);
     }
 
     public String getAuthor() {
@@ -31,7 +35,7 @@ public class Book {
     }
 
     public void setAuthor(String author) {
-        this.author = author;
+        this.author = Validator.nonBlank(author);
     }
 
     public int getPrice() {
@@ -39,11 +43,17 @@ public class Book {
     }
 
     public void setPrice(int price) {
-        this.price = price;
+        this.price = Validator.positive(price, "Price");
     }
 
     public String getId(){
         return this.id;
+    }
+
+    public String getIsbn() { return isbn; }
+    public int getPublicationYear() { return publicationYear; }
+    public void setPublicationYear(int publicationYear) {
+        this.publicationYear = Validator.positive(publicationYear, "Publication year");
     }
 
     public boolean isRented() {

@@ -59,6 +59,7 @@ public class Rent {
                 + " User ID: " + this.userId
                 + " Book ID: " + this.bookId
                 + " Rented At: " + this.rentedAt.toString()
-                + " Returned At: " + this.returnedAt.toString();
+                + " Status: " + this.status
+                + " Returned At: " + (this.returnedAt == null ? "Not returned" : this.returnedAt);
     }
 }

@@ -1,8 +1,9 @@
 package com.airtribe.library.exception;
 
-public class InvalidDataException extends RuntimeException {
+public class DataNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 1L;
-    public InvalidDataException(String message) {
+
+    public DataNotFoundException(String message) {
         super(message);
     }
 }

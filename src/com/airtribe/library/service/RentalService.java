@@ -5,31 +5,31 @@ import com.airtribe.library.dao.LocalDatastore;
 import com.airtribe.library.entity.Book;
 import com.airtribe.library.entity.Rent;
 import com.airtribe.library.entity.RentStatus;
-import com.airtribe.library.entity.User;
 import com.airtribe.library.exception.BookStatusException;
-import com.airtribe.library.exception.DataNotFoundExcpetion;
+import com.airtribe.library.exception.DataNotFoundException;
 import com.airtribe.library.strategy.FeeCalculator;
 import com.airtribe.library.utils.TimeUtils;
+import com.airtribe.library.utils.Validator;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public class RentalService {
-    private final UserService userService;
+    private final PatronService patronService;
     private final BookService bookService;
     private final Datastore<Rent> rentDB;
     private FeeCalculator feeCalculator;
 
-    public RentalService(UserService u, BookService b, FeeCalculator feeCalculator){
+    public RentalService(PatronService patronService, BookService b, FeeCalculator feeCalculator){
         this.bookService = b;
-        this.userService = u;
+        this.patronService = patronService;
         this.rentDB = new LocalDatastore<>();
         this.feeCalculator = feeCalculator;
     }
 
     public Rent loanBook(String userId, String bookId){
-        User u = userService.getUserById(userId);
+        patronService.getPatronById(userId);
         Book b = bookService.getBookById(bookId);
         if(b.isRented()){
             throw new BookStatusException("Book is already rented. Not available now!!");
@@ -44,7 +44,7 @@ public class RentalService {
         Optional<Rent> r = rentDB.getItemById(id);
         if(r.isPresent())
             return r.get();
-        throw new DataNotFoundExcpetion("Rent not found!!");
+        throw new DataNotFoundException("Rent not found: " + id);
     }
 
     public double returnBook(String rentId, String returnDate){
@@ -53,16 +53,18 @@ public class RentalService {
             throw new BookStatusException("Book has been returned already on " + r.getReturnedAt());
         }
         LocalDateTime date = TimeUtils.parse(returnDate);
+        Validator.isReturnedInPast(r.getRentedAt(), date);
         long days = TimeUtils.calculateDays(r.getRentedAt(), date);
         Book b = bookService.getBookById(r.getBookId());
-        b.setRented(false);
         r.markCompleted(date);
+        b.setRented(false);
         int bookPrice = b.getPrice();
         return feeCalculator.calculate(days, bookPrice);
     }
 
     public List<Rent> getUserHistory(String userId){
-        return List.copyOf(rentDB.getAllItems().stream().filter(r -> r.getUserId().equals(userId)).toList());
+        patronService.getPatronById(userId);
+        return rentDB.getAllItems().stream().filter(r -> r.getUserId().equals(userId)).toList();
     }
 
     public FeeCalculator getFeeCalculator() {
